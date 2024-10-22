@@ -1,0 +1,81 @@
+<?php
+include "connect.php";
+
+// Tjek om movieId er til stede i URL'en
+if (!isset($_GET['movieId'])) {
+    die("Ingen film valgt. Manglende movieId i URL.");
+}
+
+$movieId = $_GET['movieId'];
+
+// Hent filmens data fra movies-tabellen
+$movie = sql("SELECT * FROM movies WHERE movieId = :movieId", [":movieId" => $movieId]);
+
+// Tjek om vi fik en film tilbage fra databasen
+if (empty($movie)) {
+    die("Ingen film fundet med movieId: " . $movieId);
+}
+
+$movie = $movie[0];  // Vi antager, at vi kun får én film, så vi tager den første.
+
+// Hent anmeldelser og skuespillere for denne film
+$movieDetails = sql("
+    SELECT reviews.reviewId, reviews.review_title, reviews.name_of_the_reviewer, reviews.review_rating,
+           actors.actorId, actors.name AS actor_name
+    FROM movie_actor
+    JOIN reviews ON movie_actor.reviewConId = reviews.reviewId
+    JOIN actors ON movie_actor.actorConId = actors.actorId
+    WHERE movie_actor.movieConId = :movieId
+", [":movieId" => $movieId]);
+
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $movie['movieTitle']; ?> - Film Detaljer</title>
+</head>
+<body>
+
+<h1><?php echo $movie['movieTitle']; ?></h1>
+
+<h2>Hovedskuespillere</h2>
+<ul>
+    <?php
+    // Hvis der er detaljer, vis skuespillerne
+    if (!empty($movieDetails)) {
+        foreach ($movieDetails as $detail) {
+            echo '<li><a href="actor.php?actorId=' . $detail['actorId'] . '">' . $detail['actor_name'] . '</a></li>';
+        }
+    } else {
+        echo '<li>Ingen skuespillere fundet.</li>';
+    }
+    ?>
+</ul>
+
+<h2>Anmeldelser</h2>
+<table>
+    <tr>
+        <th>Anmeldelse Titel</th>
+        <th>Reviewer</th>
+        <th>Rating</th>
+    </tr>
+    <?php
+    // Vis anmeldelser og reviewers, hvis der er nogen
+    if (!empty($movieDetails)) {
+        foreach ($movieDetails as $detail) {
+            echo "<tr>";
+            echo "<td><a href='review.php?reviewId=" . $detail['reviewId'] . "'>" . $detail['review_title'] . "</a></td>";
+            echo "<td>" . $detail['name_of_the_reviewer'] . "</td>";
+            echo "<td>" . $detail['review_rating'] . "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='3'>Ingen anmeldelser fundet.</td></tr>";
+    }
+    ?>
+</table>
+
+</body>
+</html>

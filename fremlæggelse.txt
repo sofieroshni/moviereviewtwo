@@ -1,0 +1,35 @@
+.then(res=>res.json)() 
+når data bliver modtaget håndteres de som en response
+ved at kalde .json(), får vi svaret som json-data
+.then(data=>{showMovies(data.results)}}
+Her bliver data.results (listen med film)
+ sendt til showMovies()-funktionen. Funktionen showMovies() kan så bruge denne 
+liste til at vise hver film på din side.
+funktion showMovies(data)
+sørger for at mvoieContainer.innerHtml ='' tømmes
+derefter laver jeg en forEach hvor movies er
+mit parameter. 
+min movies er et objekt med udvakgte informationer
+jeg hentede fra via fectrh hentede fra mit data-array.
+derefter laver jeg et div element og afspiller
+min informationer.
+jeg sørger for at jeg skipper de film uden billeder
+Jeg tilføjer til sidst en mine film(div) til min html struktur(movieContainer)
+Jeg har til min Form har jeg tilføjet en Eventlistener. 
+ Den "værdi" brugeren søgeord har jeg lagt ind i min konstant SearchTearm
+skriver inde i mit input felt. 
+Derefter laver jeg en if else med betingelsen, at hvis brugeren sørger
+så skal getMovies funktion ske. 
+
+
+Ved at bruge foreach kan jeg få adgang 
+til hver enkelt anmeldelse én ad gangen. 
+ Ved at definere $review i 
+foreach-sætningen får jeg mulighed 
+for at referere til den aktuelle anmeldelse 
+inden for loopet.
+ Dette betyder, at jeg nemmere kan
+ få adgang til anmeldelsernes egenskaber
+ (som review_titel, review_text osv.) 
+og afspille dem i min HTML.
+
